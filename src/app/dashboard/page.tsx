@@ -1,9 +1,11 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { format, parse } from 'date-fns'
+import Link from 'next/link'
 import { WorkoutCard } from './_components/WorkoutCard'
 import { DatePickerClient } from './_components/DatePickerClient'
 import { getWorkoutsForDate } from '@/data/workouts'
+import { buttonVariants } from '@/components/ui/button'
 
 export default async function DashboardPage({
   searchParams,
@@ -34,7 +36,15 @@ export default async function DashboardPage({
           <h2 className='text-lg font-semibold mb-4'>Workouts for {formattedDate}</h2>
 
           {workoutList.length === 0 ? (
-            <p className='text-sm text-muted-foreground'>No workouts logged for this date.</p>
+            <div className='flex flex-col gap-4'>
+              <p className='text-sm text-muted-foreground'>No workouts logged for this date.</p>
+              <Link
+                href={`/dashboard/workout/new?date=${dateString}`}
+                className={buttonVariants({ size: 'sm' })}
+              >
+                New Workout
+              </Link>
+            </div>
           ) : (
             <ul className='flex flex-col gap-3'>
               {workoutList.map((workout) => (

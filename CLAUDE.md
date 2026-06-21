@@ -10,6 +10,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `/docs/ui.md` — UI component and date formatting standards (read before touching any UI)
 - `/docs/data-fetching.md` — data fetching rules: Server Components only, `/src/data/` helpers, Drizzle ORM only, user data isolation (read before writing any data access code)
+- `/docs/data-mutations.md` — mutation rules: `/src/data/` helpers, Server Actions in colocated `actions.ts`, typed params (no FormData), Zod validation required (read before writing any mutation or Server Action code)
+- `/docs/auth.md` — auth standards: Clerk only, proxy setup, `auth()` usage, UI components (read before writing any auth or user-identity code)
 
 If a docs file exists for the area you are working in, its rules override any defaults or assumptions.
 
