@@ -4,6 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 @AGENTS.md
 
+## Docs First
+
+**Before generating any code, always check the `/docs` directory for a relevant standards file and follow it exactly.**
+
+- `/docs/ui.md` — UI component and date formatting standards (read before touching any UI)
+
+If a docs file exists for the area you are working in, its rules override any defaults or assumptions.
+
 ## Requirements
 
 - **Node.js 20.9+** (Next.js 16 minimum). The current environment is on Node 18 — upgrade before running the dev server or builds.
