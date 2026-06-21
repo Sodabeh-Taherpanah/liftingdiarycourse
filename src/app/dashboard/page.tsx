@@ -1,38 +1,24 @@
-'use client'
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
+import { format, parse } from 'date-fns'
+import { WorkoutCard } from './_components/WorkoutCard'
+import { DatePickerClient } from './_components/DatePickerClient'
+import { getWorkoutsForDate } from '@/data/workouts'
 
-import { useState } from 'react'
-import { format } from 'date-fns'
-import { Calendar } from '@/components/ui/calendar'
-import { WorkoutCard, type WorkoutCardProps } from './_components/WorkoutCard'
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ date?: string }>
+}) {
+  const { userId } = await auth()
+  if (!userId) redirect('/sign-in')
 
-const MOCK_WORKOUTS: WorkoutCardProps[] = [
-  {
-    id: '1',
-    title: 'Upper Body Strength',
-    startedAt: new Date('2026-06-21T09:00:00'),
-    completedAt: new Date('2026-06-21T09:45:00'),
-    workoutExercises: [
-      { id: 'we1', exercise: { name: 'Bench Press', category: 'compound' } },
-      { id: 'we2', exercise: { name: 'Pull-ups', category: 'compound' } },
-      { id: 'we3', exercise: { name: 'Shoulder Press', category: 'compound' } },
-    ],
-  },
-  {
-    id: '2',
-    title: 'Cardio Session',
-    startedAt: new Date('2026-06-21T18:00:00'),
-    completedAt: new Date('2026-06-21T18:30:00'),
-    workoutExercises: [
-      { id: 'we4', exercise: { name: 'Treadmill', category: 'isolation' } },
-      { id: 'we5', exercise: { name: 'Rowing', category: 'isolation' } },
-    ],
-  },
-]
+  const { date: dateParam } = await searchParams
+  const dateString = dateParam ?? format(new Date(), 'yyyy-MM-dd')
+  const selectedDate = parse(dateString, 'yyyy-MM-dd', new Date())
 
-export default function DashboardPage() {
-  const [date, setDate] = useState<Date>(new Date())
-
-  const formattedDate = format(date, 'do MMM yyyy')
+  const workoutList = await getWorkoutsForDate(userId, dateString)
+  const formattedDate = format(selectedDate, 'do MMM yyyy')
 
   return (
     <main className='max-w-5xl mx-auto px-4 py-8'>
@@ -41,24 +27,25 @@ export default function DashboardPage() {
       <div className='grid grid-cols-[auto_1fr] gap-10 items-start'>
         <div>
           <p className='text-sm font-medium mb-3'>Select Date</p>
-          <Calendar
-            mode='single'
-            selected={date}
-            onSelect={(d) => d && setDate(d)}
-            className='rounded-md border border-border'
-          />
+          <DatePickerClient selectedDate={selectedDate} />
         </div>
 
         <div>
           <h2 className='text-lg font-semibold mb-4'>Workouts for {formattedDate}</h2>
 
-          {MOCK_WORKOUTS.length === 0 ? (
+          {workoutList.length === 0 ? (
             <p className='text-sm text-muted-foreground'>No workouts logged for this date.</p>
           ) : (
             <ul className='flex flex-col gap-3'>
-              {MOCK_WORKOUTS.map((workout) => (
+              {workoutList.map((workout) => (
                 <li key={workout.id}>
-                  <WorkoutCard {...workout} />
+                  <WorkoutCard
+                    id={workout.id}
+                    title={workout.title}
+                    startedAt={workout.startedAt}
+                    completedAt={workout.completedAt}
+                    workoutExercises={workout.workoutExercises}
+                  />
                 </li>
               ))}
             </ul>
