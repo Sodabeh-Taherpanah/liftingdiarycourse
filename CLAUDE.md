@@ -12,6 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `/docs/data-fetching.md` — data fetching rules: Server Components only, `/src/data/` helpers, Drizzle ORM only, user data isolation (read before writing any data access code)
 - `/docs/data-mutations.md` — mutation rules: `/src/data/` helpers, Server Actions in colocated `actions.ts`, typed params (no FormData), Zod validation required (read before writing any mutation or Server Action code)
 - `/docs/auth.md` — auth standards: Clerk only, proxy setup, `auth()` usage, UI components (read before writing any auth or user-identity code)
+- `/docs/server-components.md` — Server Component rules: async params/searchParams must be awaited, auth-before-data order, no fetching in client components (read before writing any page or layout component)
 
 If a docs file exists for the area you are working in, its rules override any defaults or assumptions.
 
@@ -61,8 +62,8 @@ Key breaks from prior versions:
 - **Async Request APIs** — `cookies()`, `headers()`, `draftMode()`, route `params`, and page `searchParams` are fully async. Synchronous access is removed. Always `await` them.
   ```ts
   // correct
-  const { slug } = await props.params
-  const cookieStore = await cookies()
+  const { slug } = await props.params;
+  const cookieStore = await cookies();
   ```
 - **`middleware` → `proxy`** — rename `middleware.ts` → `proxy.ts`; export `proxy` instead of `middleware`. The `edge` runtime is not supported in `proxy` (use `nodejs`). Config flag `skipMiddlewareUrlNormalize` → `skipProxyUrlNormalize`.
 - **Turbopack by default** — `next dev` and `next build` use Turbopack. Custom `webpack` config in `next.config.ts` will cause `next build` to fail unless `--webpack` is passed. Use top-level `turbopack: {}` (not `experimental.turbopack`).
